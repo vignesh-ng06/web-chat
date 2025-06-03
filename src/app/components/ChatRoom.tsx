@@ -13,6 +13,7 @@ import {
   where,
   orderBy,
   updateDoc,
+  increment
 } from 'firebase/firestore';
 import { db } from '@/firebase/config'; // Adjust the import based on your Firebase config file
 import ChatHeader from './ChatHeader';
@@ -64,6 +65,14 @@ function ChatRoom({ user, selectedChatroom }: ChatRoomProps): JSX.Element {
     }
   }, [messages]);
 
+  useEffect(() => {
+  if (!chatRoomId || !me?.id) return;
+  // Reset unread count for current user
+  updateDoc(doc(db, 'chatrooms', chatRoomId), {
+    [`unreadCounts.${me.id}`]: 0,
+  });
+}, [chatRoomId, me?.id]);
+
   // Get messages from Firestore
   useEffect(() => {
     if (!chatRoomId) return;
@@ -104,6 +113,7 @@ function ChatRoom({ user, selectedChatroom }: ChatRoomProps): JSX.Element {
       await updateDoc(doc(db, 'chatrooms', chatRoomId), {
         lastMessage: message || 'Image',
         timestamp: serverTimestamp(),
+        [`unreadCounts.${other.id}`]: increment(1),
       });
 
       setMessage('');

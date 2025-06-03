@@ -31,6 +31,7 @@ interface Chatroom {
   usersData: Record<string, User>;
   lastMessage?: string | null;
   timestamp?: any; // can be Timestamp | null
+  unreadCounts?: Record<string, number>;
 }
 
 interface UsersProps {
@@ -228,7 +229,9 @@ function Users({ userData, setSelectedChatroom }: UsersProps): JSX.Element {
                             return timestamp.toLocaleDateString('en-US');
                           }
                         })()}
+                        unreadcount={chatroom.unreadCounts?.[userData.id] || 0}
                         type="chat"
+                      
                       />
                     </div>
                   );
