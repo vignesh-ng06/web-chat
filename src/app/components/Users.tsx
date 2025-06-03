@@ -59,7 +59,7 @@ function Users({ userData, setSelectedChatroom }: UsersProps): JSX.Element {
   useEffect(() => {
     setLoading2(true);
     const usersQuery = query(collection(db, 'users'));
-
+    console.log(usersQuery, 'usersQuery');
     const unsubscribe = onSnapshot(usersQuery, (snapshot) => {
       const usersData = snapshot.docs.map((doc) => ({
         id: doc.id,
