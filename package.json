@@ -12,6 +12,7 @@
     "autoprefixer": "^10.4.21",
     "emoji-picker-react": "^4.12.2",
     "firebase": "^11.8.1",
+    "lucide-react": "^0.511.0",
     "moment": "^2.30.1",
     "next": "15.3.2",
     "postcss": "^8.5.3",

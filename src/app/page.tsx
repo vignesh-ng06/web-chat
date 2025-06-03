@@ -65,13 +65,21 @@ function Page(): JSX.Element {
     </div>
 
     {/* Right side chat room */}
-    <div className="flex-grow w-9/12">
+    <div className="flex-grow w-9/12 relative">
       {selectedChatroom ? (
+      <>
+        <button
+        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        onClick={() => setSelectedChatroom(null)}
+        >
+        ✖
+        </button>
         <ChatRoom user={user} selectedChatroom={selectedChatroom} />
+      </>
       ) : (
-        <div className="flex items-center justify-center h-full">
-          <div className="text-2xl text-gray-400">Select a chatroom</div>
-        </div>
+      <div className="flex items-center justify-center h-full">
+        <div className="text-2xl text-gray-400">Select a chatroom</div>
+      </div>
       )}
     </div>
   </div>
