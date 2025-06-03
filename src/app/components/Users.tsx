@@ -33,7 +33,6 @@ interface Chatroom {
   timestamp?: any; // can be Timestamp | null
 }
 
-
 interface UsersProps {
   userData: User;
   setSelectedChatroom: (chatroom: {
@@ -154,13 +153,13 @@ function Users({ userData, setSelectedChatroom }: UsersProps): JSX.Element {
   // Logout
   const logoutClick = () => {
     signOut(auth)
-          .then(() => {
-            toast.success('Logged out successfully');
-            router.push('/pages/login');
-          })
-          .catch((error) => {
-            toast.error('Error logging out: ' + error.message);
-          });
+      .then(() => {
+        toast.success('Logged out successfully');
+        router.push('/pages/login');
+      })
+      .catch((error) => {
+        toast.error('Error logging out: ' + error.message);
+      });
   };
 
   return (
@@ -192,43 +191,47 @@ function Users({ userData, setSelectedChatroom }: UsersProps): JSX.Element {
                 <span className="loading loading-spinner text-primary"></span>
               </div>
             ) : (
-              userChatrooms.map((chatroom) => {
-                const otherUserId = chatroom.users.find((id) => id !== userData?.id);
-                const otherUser = chatroom.usersData[otherUserId ?? ''];
+              [...userChatrooms]
+                .sort((a, b) => {
+                  const timeA = a.timestamp?.toDate?.() || new Date(0);
+                  const timeB = b.timestamp?.toDate?.() || new Date(0);
+                  return timeB.getTime() - timeA.getTime(); // Latest first
+                })
+                .map((chatroom) => {
+                  const otherUserId = chatroom.users.find((id) => id !== userData?.id);
+                  const otherUser = chatroom.usersData[otherUserId ?? ''];
 
-                return (
+                  return (
                     <div key={chatroom.id} onClick={() => openChat(chatroom)}>
-                    <UsersCard
-                      name={otherUser?.name || 'Unknown'}
-                      avatarUrl={otherUser?.avatarUrl || ''}
-                      latestMessage={chatroom.lastMessage || 'No Messages Yet'}
-                      time={
-                      (() => {
-                        const timestamp = chatroom.timestamp?.toDate();
-                        if (!timestamp) return '';
-                        const now = new Date();
-                        const isToday = timestamp.toDateString() === now.toDateString();
-                        const isYesterday =
-                        timestamp.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString();
+                      <UsersCard
+                        name={otherUser?.name || 'Unknown'}
+                        avatarUrl={otherUser?.avatarUrl || ''}
+                        latestMessage={chatroom.lastMessage || 'No Messages Yet'}
+                        time={(() => {
+                          const timestamp = chatroom.timestamp?.toDate();
+                          if (!timestamp) return '';
+                          const now = new Date();
+                          const isToday = timestamp.toDateString() === now.toDateString();
+                          const isYesterday =
+                            timestamp.toDateString() === new Date(now.setDate(now.getDate() - 1)).toDateString();
 
-                        if (isToday) {
-                        return timestamp.toLocaleString('en-US', {
-                          hour: 'numeric',
-                          minute: 'numeric',
-                          hour12: true,
-                        });
-                        } else if (isYesterday) {
-                        return 'Yesterday';
-                        } else {
-                        return timestamp.toLocaleDateString('en-US');
-                        }
-                      })()
-                      }
-                      type="chat"
-                    />
+                          if (isToday) {
+                            return timestamp.toLocaleString('en-US', {
+                              hour: 'numeric',
+                              minute: 'numeric',
+                              hour12: true,
+                            });
+                          } else if (isYesterday) {
+                            return 'Yesterday';
+                          } else {
+                            return timestamp.toLocaleDateString('en-US');
+                          }
+                        })()}
+                        type="chat"
+                      />
                     </div>
-                );
-              })
+                  );
+                })
             )}
           </>
         )}

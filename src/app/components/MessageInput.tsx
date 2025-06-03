@@ -90,6 +90,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
         type='text'
         placeholder='Type a message...'
         className='flex-1 border-none p-2 outline-none'
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+          }
+        }}
       />
 
       <FaPaperPlane

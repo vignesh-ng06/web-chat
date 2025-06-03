@@ -101,6 +101,16 @@ function Login() {
           <button type="submit" className="btn btn-block bg-[#0b3a65ff] text-white">
             {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Sign In'}
           </button>
+          <input
+            type="submit"
+            className="hidden"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSubmit(e as unknown as FormEvent<HTMLFormElement>);
+              }
+            }}
+          />
         </div>
 
         {/* Link to Register */}

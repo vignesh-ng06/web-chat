@@ -120,13 +120,22 @@ function ChatRoom({ user, selectedChatroom }: ChatRoomProps): JSX.Element {
 
   return (
     <div className="flex flex-col h-screen">
-       <ChatHeader user={other} />
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-10">  
-        {/* Display messages */}
-        {messages.map((msg) => (
+    <ChatHeader user={other} />
+    
+    <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-10">
+      {/* Sort messages by time (latest first) */}
+      {[...messages]
+        .sort((a, b) => {
+          const timeA = a.time ? new Date(a.time).getTime() : 0;
+          const timeB = b.time ? new Date(b.time).getTime() : 0;
+          return timeB - timeA;
+        })
+        .map((msg) => (
           <MessageCard key={msg.id} message={msg} me={me} other={other} />
         ))}
-      </div>
+    </div>
+
+  
 
       <MessageInput
         sendMessage={sendMessage}
