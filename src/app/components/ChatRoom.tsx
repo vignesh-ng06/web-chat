@@ -19,9 +19,11 @@ import {
   getDocs,
   endBefore,
   limitToLast,
+  writeBatch
 } from 'firebase/firestore';
 import { db } from '@/firebase/config'; // Adjust the import based on your Firebase config file
 import ChatHeader from './ChatHeader';
+import { read } from 'fs';
 
 // Types
 interface User {
@@ -45,6 +47,7 @@ interface Message {
   content: string;
   time: any; // can be Timestamp | null
   image?: string;
+  readBy?: string[];
 }
 
 interface ChatRoomProps {
@@ -89,6 +92,25 @@ useEffect(() => {
     Notification.requestPermission();
   }
 }, []);
+
+// Mark messages as read when the chat room is opened
+useEffect(() => {
+  if (!chatRoomId || !me?.id || messages.length === 0) return;
+
+  const unreadMessages = messages.filter(
+    (msg) => !msg.readBy?.includes(me.id) && msg.sender !== me.id
+  );
+
+  if (unreadMessages.length === 0) return;
+
+  const batch = writeBatch(db);
+  unreadMessages.forEach((msg) => {
+    batch.update(doc(db, "messages", msg.id), {
+      readBy: [...(msg.readBy || []), me.id],
+    });
+  });
+  batch.commit();
+}, [messages, chatRoomId, me?.id]);
  
 // Initial fetch: only fetch once when chatRoomId changes
 useEffect(() => {
@@ -200,6 +222,7 @@ const handleLoadMore = () => {
         content: message,
         time: serverTimestamp(),
         image: image || null,
+        readBy: [me.id],
       };
 
       await addDoc(collection(db, 'messages'), newMessage);

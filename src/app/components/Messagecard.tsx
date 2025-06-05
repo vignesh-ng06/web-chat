@@ -9,6 +9,7 @@ interface Message {
   content: string;
   time: Timestamp;
   image?: string;
+  readBy?: string[]; // Array of user IDs who have read the message
 }
 
 interface User {
@@ -25,6 +26,8 @@ interface MessageCardProps {
 
 const MessageCard: React.FC<MessageCardProps> = ({ message, me, other }) => {
   const isMessageFromMe = message.sender === me.id;
+   const isRead = message.readBy?.includes(other.id);
+   console.log(isRead, "isRead");
 
   const formatTimeAgo = (timestamp: Timestamp): string => {
     const date = timestamp?.toDate();
@@ -50,7 +53,16 @@ const MessageCard: React.FC<MessageCardProps> = ({ message, me, other }) => {
           <img src={message.image} className="max-h-60 w-60 mb-4" alt="Message Attachment" />
         )}
         <p>{message.content}</p>
-        <div className="text-xs text-gray-200">{formatTimeAgo(message.time)}</div>
+        <div className="text-xs text-gray-200 flex items-center">
+          {formatTimeAgo(message.time)}
+          {isMessageFromMe && (
+            isRead ? (
+              <span className="ml-2 text-green-400">✔✔</span>
+            ) : (
+              <span className="ml-2 text-gray-400">✔</span>
+            )
+          )}
+        </div>
       </div>
     </div>
     </>
